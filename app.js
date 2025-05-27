@@ -1,115 +1,62 @@
-//import express from 'express';
 const express = require('express');
-
-//import createClient from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-//import {createClient} from '@supabase/supabase-js'
 const supabaseClient = require('@supabase/supabase-js');
-
-//import morgan from 'morgan';
 const morgan = require('morgan');
-
-//import bodyParser from "body-parser";
 const bodyParser = require('body-parser');
-
-//import { createClient } from "https://cdn.skypack.dev/@supabase/supabase-js";
+const cors = require('cors');
 
 const app = express();
 
-const cors=require("cors");
-const corsOptions ={
-   origin:'*', 
-   credentials:true,            //access-control-allow-credentials:true
-   optionSuccessStatus:200,
-}
+const corsOptions = {
+    origin: '*',
+    credentials: true,
+    optionSuccessStatus: 200,
+};
 
-app.use(cors(corsOptions)) // Use this after the variable declaration
-
-
-// using morgan for logs
+app.use(cors(corsOptions));
 app.use(morgan('combined'));
-
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const supabase = 
-    supabaseClient.createClient('https://hijbinpzejrktmigrgtd.supabase.co', 
+const supabase =
+    supabaseClient.createClient('https://hijbinpzejrktmigrgtd.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpamJpbnB6ZWpya3RtaWdyZ3RkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyNTQ3MjEsImV4cCI6MjA2MjgzMDcyMX0.9p6Z115ZBw0YTzC9jYDKn90nxQyvFaAwaQ96IvDM-qI')
 
-
 app.get('/products', async (req, res) => {
-    const {data, error} = await supabase
-        .from('products')
-        .select()
-    res.send(data);
-    console.log(`lists all products${data}`);
+    const { data, error } = await supabase.from('products').select('*');
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
 });
 
 app.get('/products/:id', async (req, res) => {
-    console.log("id = " + req.params.id);
-    const {data, error} = await supabase
-        .from('products')
-        .select()
-        .eq('id', req.params.id)
-    res.send(data);
-
-    console.log("retorno "+ data);
+    const { id } = req.params;
+    const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+    if (error) return res.status(404).json({ error: error.message });
+    res.json(data);
 });
 
 app.post('/products', async (req, res) => {
-    const {error} = await supabase
-        .from('products')
-        .insert({
-            name: req.body.name,
-            description: req.body.description,
-            price: req.body.price,
-        })
-    if (error) {
-        res.send(error);
-    }
-    res.send("created!!");
-    console.log("retorno "+ req.body.name);
-    console.log("retorno "+ req.body.description);
-    console.log("retorno "+ req.body.price);
-
+    const { name, price, description } = req.body;
+    const { data, error } = await supabase.from('products').insert([{ name, price, description }]);
+    if (error) return res.status(400).json({ error: error.message });
+    res.status(201).json(data);
 });
 
 app.put('/products/:id', async (req, res) => {
-    const {error} = await supabase
-        .from('products')
-        .update({
-            name: req.body.name,
-            description: req.body.description,
-            price: req.body.price
-        })
-        .eq('id', req.params.id)
-    if (error) {
-        res.send(error);
-    }
-    res.send("updated!!");
+    const { id } = req.params;
+    const { name, price, description } = req.body;
+    const { data, error } = await supabase.from('products').update({ name, price, description }).eq('id', id);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data);
 });
 
 app.delete('/products/:id', async (req, res) => {
-    console.log("delete: " + req.params.id);
-    const {error} = await supabase
-        .from('products')
-        .delete()
-        .eq('id', req.params.id)
-    if (error) {
-        res.send(error);
-    }
-    res.send("deleted!!")
-    console.log("delete: " + req.params.id);
-
+    const { id } = req.params;
+    const { data, error } = await supabase.from('products').delete().eq('id', id);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ message: 'Produto deletado com sucesso', data });
 });
 
-app.get('/', (req, res) => {
-    res.send("Hello I am working my friend Supabase <3");
-});
-
-/* app.get('*', (req, res) => {
-    res.send("Hello again I am working my friend to the moon and behind <3");
-}); */
-
-app.listen(3000, () => {
-    console.log(`> Ready on http://localhost:3000`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
