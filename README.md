@@ -1,6 +1,6 @@
 # Repositorio com BackEnd.
 ## Projeto simples usando nodejs e database SupaBase.
-### Garanta que você possui o **node/npm** instalado na sua maquina /n
+### Garanta que você possui o **node/npm** instalado na sua maquina
 ```npm -v```
 ### Se espera o retorno da **versão** do seu node, como no exemplo abaixo:
 ```10.9.2```
