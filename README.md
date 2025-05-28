@@ -10,3 +10,6 @@
 ```npm install morgan cors express @supabase/supabase-js```
 ### Depois **rode** o back com o node
 ```node app.js```
+
+## Caso queira rodar o FrontEnd em conjunto, siga para o link abaixo:
+[Repositorio do FrontEnd para este projeto](https://github.com/gabEsmeraldo/FrontEstudos)
