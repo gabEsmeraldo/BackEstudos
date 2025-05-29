@@ -13,3 +13,6 @@
 
 ## Caso queira rodar o FrontEnd em conjunto, siga para o link abaixo:
 [Repositorio do FrontEnd para este projeto](https://github.com/gabEsmeraldo/FrontEstudos)
+
+### Imagem demonstrativa da database(supabase)
+![image of the database](/printSupaBase.png)
